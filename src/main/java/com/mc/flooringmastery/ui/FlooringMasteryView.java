@@ -1,5 +1,9 @@
 package com.mc.flooringmastery.ui;
 
+import com.mc.flooringmastery.dto.Order;
+
+import java.time.LocalDate;
+
 public class FlooringMasteryView {
 
     UserIO io;
@@ -42,5 +46,14 @@ public class FlooringMasteryView {
         io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         io.print("* * * * * * * * Thanks for using the app! * * * * * * * * * * * * * *");
         io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+    }
+
+    public LocalDate getDate() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readLocalDate("\nPlease enter the date for an order in a format yyyy-MM-dd: ");
+    }
+
+    public Order getNewOrderInfo() {
+
     }
 }

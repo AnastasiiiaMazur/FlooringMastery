@@ -3,6 +3,7 @@ package com.mc.flooringmastery.ui;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Scanner;
+import java.util.zip.DataFormatException;
 
 public class UserIOConsoleImpl implements UserIO {
 
@@ -43,13 +44,13 @@ public class UserIOConsoleImpl implements UserIO {
                 print(prompt);
                 num = Integer.parseInt(scanner.nextLine());
                 if (num < min || num > max) {
-                    print("Please write a valid number!");
+                    print("Please write a valid number!\n");
                     continue;
                 }
 
                 isValid = true;
             } catch (NumberFormatException ex) {
-                print("Please enter a valid number!");
+                print("Please enter a valid number!\n");
             }
         }
 
@@ -57,20 +58,28 @@ public class UserIOConsoleImpl implements UserIO {
     }
 
     @Override
-    public BigDecimal readBigDecimal(String decimal) {
+    public BigDecimal readBigDecimal(String prompt) {
         BigDecimal num = new BigDecimal(0);
+        print(prompt);
         try {
-            num = new BigDecimal(decimal);
+            num = new BigDecimal(scanner.nextLine());
         } catch (NumberFormatException ex) {
-            print("Enter a valid decimal number!");
+            print("Enter a valid decimal number!\n");
         }
         return num;
     }
 
     @Override
-    public LocalDate readLocalDate(String date) {
+    public LocalDate readLocalDate(String prompt) {
         LocalDate userDate = LocalDate.now();
-        userDate = LocalDate.parse(date);
+        print(prompt);
+        try {
+            if (scanner.hasNextBigDecimal()) {
+                userDate = LocalDate.parse(scanner.nextLine());
+            }
+        } catch (Exception ex) {
+            print("Enter a valid date format!\n");
+        }
         return userDate;
     }
 }
