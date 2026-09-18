@@ -1,4 +1,4 @@
-package com.mc.flooringmastery.dao.product;
+package com.mc.flooringmastery.dao;
 
 public class FlooringMasteryPersistenceException extends RuntimeException {
 
