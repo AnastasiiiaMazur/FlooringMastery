@@ -53,7 +53,7 @@ public class FlooringMasteryView {
         return io.readLocalDate("\nPlease enter the date for an order in a format yyyy-MM-dd: ");
     }
 
-    public Order getNewOrderInfo() {
-
-    }
+//    public Order getNewOrderInfo() {
+//
+//    }
 }
