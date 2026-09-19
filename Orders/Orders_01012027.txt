@@ -1,0 +1,2 @@
+OrderNumber::CustomerName::State::TaxRate::ProductType::Area::CostPerSquareFoot::LaborCostPerSquareFoot::MaterialCost::LaborCost::Tax::Total
+3::Kia, LMC::KY::6.00::Carpet::400::2.25::2.10::900.00::840.00::104.40::1844.40

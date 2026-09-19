@@ -59,18 +59,18 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public BigDecimal readBigDecimal(String prompt) {
-        BigDecimal num = new BigDecimal(0);
-        print(prompt);
-        try {
-            num = new BigDecimal(scanner.nextLine());
-        } catch (NumberFormatException ex) {
-            print("Enter a valid decimal number!\n");
+        while (true) {
+            try {
+                print(prompt);
+                return new BigDecimal(scanner.nextLine());
+            } catch (NumberFormatException ex) {
+                print("Enter a valid decimal number!\n");
+            }
         }
-        return num;
     }
 
     @Override
-    public LocalDate readLocalDate(String prompt) {
+    public LocalDate readLocalDateOnce(String prompt) {
         print(prompt);
 
         try {
@@ -80,5 +80,18 @@ public class UserIOConsoleImpl implements UserIO {
         }
 
         return null;
+    }
+
+    @Override
+    public LocalDate readLocalDate(String prompt) {
+
+        while (true) {
+            try {
+                print(prompt);
+                return LocalDate.parse(scanner.nextLine());
+            } catch (Exception ex) {
+                print("Enter a valid date in yyyy-MM-dd format!\n");
+            }
+        }
     }
 }

@@ -1,2 +1,3 @@
 OrderNumber::CustomerName::State::TaxRate::ProductType::Area::CostPerSquareFoot::LaborCostPerSquareFoot::MaterialCost::LaborCost::Tax::Total
 1::Sam::WA::9.25::Wood::120::5.15::4.75::618.00::570.00::109.89::1297.89
+2::John::TX::4.45::Tile::100::3.50::4.15::350.00::415.00::34.04::799.04

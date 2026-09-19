@@ -76,21 +76,28 @@ public class FlooringMasteryController {
     private void addOrder() {
         try {
             // 1. Ask View for date
-            LocalDate date = view.getDate();
+            LocalDate date = dateValidation();
+
             // 2. Ask View for customer name
-            String name = view.getCustomerName();
+            String name = nameValidation();
+
             // 3. Display available states and get state
             view.displayAvailableStates(service.getAllTaxes());
-            String state = view.getState();
+            String state = stateValidation();
+
             // 4. Display available products and get product
             view.displayAvailableProducts(service.getAllProducts());
-            String productType = view.getProductType();
+            String productType = productValidation();
+
             // 5. Ask for area
-            BigDecimal area = view.getArea();
+            BigDecimal area = areaValidation();
+
             // 6. service.createOrder(...)
             Order complete = service.createOrder(date, name, state, productType, area);
+
             // 7. View displays completed order
             view.displayCompleteOrder(complete);
+
             // 8. Ask for confirmation
             if (view.confirmation("Would you like to place this order?")) {
                 service.addOrder(date, complete);
@@ -98,8 +105,7 @@ public class FlooringMasteryController {
             } else {
                 view.displayOrderStatusMessage("Order cancelled!");
             }
-            // 9. If confirmed:
-            //       service.addOrder(date, order)
+
 
         } catch (FlooringMasteryDataValidationException e) {
             view.displayErrorMessage(e.getMessage());
@@ -117,4 +123,82 @@ public class FlooringMasteryController {
     }
 
     private void exitMessage() { view.displayExitMessage(); }
+
+    private LocalDate dateValidation() {
+        LocalDate date;
+        while (true) {
+            try {
+                date = view.getDate();
+                service.validateDate(date);
+                break;
+            } catch (FlooringMasteryDataValidationException e) {
+                view.displayErrorMessage(e.getMessage());
+            }
+        }
+        return date;
+    }
+
+    private String nameValidation() {
+        String name;
+
+        while (true) {
+            try {
+                name = view.getCustomerName();
+                service.validateCustomer(name);
+                break;
+            } catch (FlooringMasteryDataValidationException e) {
+                view.displayErrorMessage(e.getMessage());
+            }
+        }
+
+        return name;
+    }
+
+    private String stateValidation() {
+        String state;
+
+        while (true) {
+            try {
+                state = view.getState();
+                service.validateState(state);
+                break;
+            } catch (FlooringMasteryDataValidationException e) {
+                view.displayErrorMessage(e.getMessage());
+            }
+        }
+
+        return state;
+    }
+
+    private String productValidation() {
+        String productType;
+
+        while (true) {
+            try {
+                productType = view.getProductType();
+                service.validateProduct(productType);
+                break;
+            } catch (FlooringMasteryDataValidationException e) {
+                view.displayErrorMessage(e.getMessage());
+            }
+        }
+
+        return productType;
+    }
+
+    private BigDecimal areaValidation() {
+        BigDecimal area;
+
+        while (true) {
+            try {
+                area = view.getArea();
+                service.validateOrderArea(area);
+                break;
+            } catch (FlooringMasteryDataValidationException e) {
+                view.displayErrorMessage(e.getMessage());
+            }
+        }
+
+        return area;
+    }
 }

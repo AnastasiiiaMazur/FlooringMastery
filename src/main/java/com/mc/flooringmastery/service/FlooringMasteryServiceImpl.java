@@ -115,6 +115,31 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return orderDao.removeOrder(date, orderNumber);
     }
 
+    @Override
+    public void validateDate(LocalDate date) {
+        validateDateFuture(date);
+    }
+
+    @Override
+    public void validateCustomer(String customerName) {
+        validateCustomerName(customerName);
+    }
+
+    @Override
+    public void validateState(String state) {
+        getTaxForState(state);
+    }
+
+    @Override
+    public void validateProduct(String productType) {
+        getProduct(productType);
+    }
+
+    @Override
+    public void validateOrderArea(BigDecimal area) {
+        validateArea(area);
+    }
+
     // BigDecimal tax; calc = (materialCost + labourCost) * (taxrate/100)
     private BigDecimal calculateTax(
             BigDecimal materialCost,
@@ -189,8 +214,6 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     }
 
     private void validateDateFuture(LocalDate date) {
-        System.out.println("DEBUG DATE: " + date);
-        System.out.println("DEBUG TODAY: " + LocalDate.now());
         if (date == null || !date.isAfter(LocalDate.now())) {
             throw new FlooringMasteryDataValidationException(
                     "Order date must be in the future."

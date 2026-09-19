@@ -17,4 +17,6 @@ public interface UserIO {
 
     LocalDate readLocalDate(String date);
 
+    LocalDate readLocalDateOnce(String date);
+
 }

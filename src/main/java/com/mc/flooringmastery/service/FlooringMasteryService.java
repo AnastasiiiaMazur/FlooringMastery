@@ -41,4 +41,19 @@ public interface FlooringMasteryService {
 
     Order removeOrder(LocalDate date, int orderNumber)
             throws FlooringMasteryPersistenceException, FlooringMasteryDataValidationException;
+
+    void validateDate(LocalDate date)
+            throws FlooringMasteryDataValidationException;
+
+    void validateCustomer(String customerName)
+            throws FlooringMasteryDataValidationException;
+
+    void validateState(String state)
+            throws FlooringMasteryDataValidationException;
+
+    void validateProduct(String productType)
+            throws FlooringMasteryDataValidationException;
+
+    void validateOrderArea(BigDecimal area)
+            throws FlooringMasteryDataValidationException;
 }
