@@ -6,6 +6,16 @@
 
     <bean id="io" class="com.mc.flooringmastery.ui.UserIOConsoleImpl"/>
 
+    <bean id="orderDao" class="com.mc.flooringmastery.dao.order.OrderDaoFileImpl"/>
+    <bean id="taxDao" class="com.mc.flooringmastery.dao.tax.TaxDaoFileImpl"/>
+    <bean id="productDao" class="com.mc.flooringmastery.dao.product.ProductDaoFileImpl"/>
+
+    <bean id="service" class="com.mc.flooringmastery.service.FlooringMasteryServiceImpl">
+        <constructor-arg ref="orderDao"/>
+        <constructor-arg ref="taxDao"/>
+        <constructor-arg ref="productDao"/>
+    </bean>
+
     <bean id="view" class="com.mc.flooringmastery.ui.FlooringMasteryView">
         <constructor-arg ref="io" />
     </bean>
