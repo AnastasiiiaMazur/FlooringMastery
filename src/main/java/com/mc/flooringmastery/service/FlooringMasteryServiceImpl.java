@@ -68,7 +68,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
         validateDateFuture(date);
 
-        int orderNumber = getOrderNum(date);
+        int orderNumber = getOrderNum();
 
         return buildOrder(
                 orderNumber,
@@ -207,17 +207,18 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         }
     }
 
-    private int getOrderNum(LocalDate date) {
-        List<Order> allOrders = orderDao.getAllOrders(date);
-
-        int highestOrderNumber = 0;
-
-        for (Order order : allOrders) {
-            if (order.getOrderNumber() > highestOrderNumber) {
-                highestOrderNumber = order.getOrderNumber();
-            }
-        }
-        return highestOrderNumber + 1;
+    private int getOrderNum() {
+//        List<Order> allOrders = orderDao.getAllOrders(date);
+//
+//        int highestOrderNumber = 0;
+//
+//        for (Order order : allOrders) {
+//            if (order.getOrderNumber() > highestOrderNumber) {
+//                highestOrderNumber = order.getOrderNumber();
+//            }
+//        }
+//        return highestOrderNumber + 1;
+        return orderDao.getHighestOrderNumber() + 1;
     }
 
     private Order buildOrder(

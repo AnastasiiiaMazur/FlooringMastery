@@ -15,8 +15,8 @@ import java.util.Scanner;
 
 public class OrderDaoFileImpl implements OrderDao {
 
-    private String header = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot," +
-            "LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
+    private String header = "OrderNumber::CustomerName::State::TaxRate::ProductType::Area::CostPerSquareFoot::" +
+                    "LaborCostPerSquareFoot::MaterialCost::LaborCost::Tax::Total";
     private static final String DELIMITER = "::";
     private HashMap<Integer, Order> orders = new HashMap<>();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
@@ -60,6 +60,35 @@ public class OrderDaoFileImpl implements OrderDao {
         writeOrders(getOrderFileName(date));
 
         return removedOrder;
+    }
+
+    @Override
+    public int getHighestOrderNumber() throws FlooringMasteryPersistenceException {
+
+        File ordersDirectory = new File("Orders");
+        File[] orderFiles = ordersDirectory.listFiles();
+
+        int highestOrderNumber = 0;
+
+        if (orderFiles == null) {
+            return highestOrderNumber;
+        }
+
+        for (File orderFile : orderFiles) {
+
+            if (orderFile.isFile() && orderFile.getName().startsWith("Orders_")) {
+
+                loadOrders(orderFile.getPath());
+
+                for (Order order : orders.values()) {
+                    if (order.getOrderNumber() > highestOrderNumber) {
+                        highestOrderNumber = order.getOrderNumber();
+                    }
+                }
+            }
+        }
+
+        return highestOrderNumber;
     }
 
     private String getOrderFileName(LocalDate date) {
