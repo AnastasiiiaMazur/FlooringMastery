@@ -53,10 +53,11 @@ public class ProductDaoFileImpl implements ProductDao {
     private Product unmarshallProduct(String productAsText) {
         String[] productTokens = productAsText.split(DELIMITER);
 
-        Product product = new Product();
-        product.setProductType(productTokens[0]);
-        product.setCostPerSquareFoot(new BigDecimal(productTokens[1]));
-        product.setLabourCostPerSquareFoot(new BigDecimal(productTokens[2]));
+        Product product = new Product(
+                productTokens[0],
+                new BigDecimal(productTokens[1]),
+                new BigDecimal(productTokens[2])
+        );
 
         return product;
     }

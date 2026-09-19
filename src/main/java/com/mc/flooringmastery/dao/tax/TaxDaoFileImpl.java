@@ -54,10 +54,11 @@ public class TaxDaoFileImpl implements TaxDao {
     private Tax unmarshallTax(String taxAsText) {
         String[] taxTokens = taxAsText.split(DELIMITER);
 
-        Tax tax = new Tax();
-        tax.setStateAbr(taxTokens[0]);
-        tax.setState(taxTokens[1]);
-        tax.setTaxRate(new BigDecimal(taxTokens[2]));
+        Tax tax = new Tax(
+                taxTokens[1],
+                taxTokens[0],
+                new BigDecimal(taxTokens[2])
+        );
 
         return tax;
     }
