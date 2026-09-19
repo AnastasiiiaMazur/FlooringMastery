@@ -54,6 +54,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public Order removeOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException {
+
         loadOrdersForDate(date);
         Order removedOrder = orders.remove(orderNumber);
         writeOrders(getOrderFileName(date));
