@@ -130,17 +130,17 @@ public class Order {
     @Override
     public String toString() {
         return orderNumber +
-                "," + orderName +
-                "," + state +
-                "," + taxRate +
-                "," + productType +
-                "," + area +
-                "," + costPerSquareFoot +
-                "," + labourCostPerSquareFoot +
-                "," + materialCost +
-                "," + labourCost +
-                "," + tax +
-                "," + total;
+                "::" + orderName +
+                "::" + state +
+                "::" + taxRate +
+                "::" + productType +
+                "::" + area +
+                "::" + costPerSquareFoot +
+                "::" + labourCostPerSquareFoot +
+                "::" + materialCost +
+                "::" + labourCost +
+                "::" + tax +
+                "::" + total;
     }
 
 // equals()

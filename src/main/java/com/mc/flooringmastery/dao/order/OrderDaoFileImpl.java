@@ -8,6 +8,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -16,46 +17,48 @@ public class OrderDaoFileImpl implements OrderDao {
 
     private String header = "OrderNumber,CustomerName,State,TaxRate,ProductType,Area,CostPerSquareFoot," +
             "LaborCostPerSquareFoot,MaterialCost,LaborCost,Tax,Total";
-    private static final String DELIMITER = ",";
+    private static final String DELIMITER = "::";
     private HashMap<Integer, Order> orders = new HashMap<>();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
 
     @Override
-    public List<Order> getAllOrders(LocalDate date) {
-        return List.of();
+    public List<Order> getAllOrders(LocalDate date) throws FlooringMasteryPersistenceException {
+        loadOrdersForDate(date);
+        return new ArrayList<>(orders.values());
     }
 
     @Override
-    public Order getOrder(LocalDate date, int orderNumber) {
-        return null;
+    public Order getOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException {
+        loadOrdersForDate(date);
+
+        return orders.get(orderNumber);
     }
 
     @Override
-    public Order addOrder(LocalDate date, Order order) {
-        String fileName = getOrderFileName(date);
-        File orderFile = new File(fileName);
-
-        if (orderFile.exists()) {
-            loadOrders(fileName);
-        } else {
-            orders.clear();
-        }
-
+    public Order addOrder(LocalDate date, Order order) throws FlooringMasteryPersistenceException{
+        loadOrdersForDate(date);
         orders.put(order.getOrderNumber(), order);
-
-        writeOrders(fileName);
+        writeOrders(getOrderFileName(date));
 
         return order;
     }
 
     @Override
-    public Order editOrder(LocalDate date, Order order) {
-        return null;
+    public Order editOrder(LocalDate date, Order order) throws FlooringMasteryPersistenceException {
+        loadOrdersForDate(date);
+        orders.put(order.getOrderNumber(), order);
+        writeOrders(getOrderFileName(date));
+
+        return order;
     }
 
     @Override
-    public Order removeOrder(LocalDate date, int orderNumber) {
-        return null;
+    public Order removeOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException {
+        loadOrdersForDate(date);
+        Order removedOrder = orders.remove(orderNumber);
+        writeOrders(getOrderFileName(date));
+
+        return removedOrder;
     }
 
     private String getOrderFileName(LocalDate date) {
@@ -94,7 +97,7 @@ public class OrderDaoFileImpl implements OrderDao {
         try {
             scanner = new Scanner(new BufferedReader(new FileReader(fileName)));
         } catch (FileNotFoundException e) {
-            throw new FlooringMasteryPersistenceException("No such file exists!");
+            throw new FlooringMasteryPersistenceException("Could not load order data.", e);
         }
 
         String currentLine;
@@ -138,5 +141,15 @@ public class OrderDaoFileImpl implements OrderDao {
         return order.toString();
     }
 
+    private void loadOrdersForDate(LocalDate date) {
+        String fileName = getOrderFileName(date);
+        File orderFile = new File(fileName);
+
+        if (orderFile.exists()) {
+            loadOrders(fileName);
+        } else {
+            orders.clear();
+        }
+    }
 }
 
