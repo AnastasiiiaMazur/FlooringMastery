@@ -119,20 +119,20 @@ public class OrderDaoFileImpl implements OrderDao {
     private Order unmarshallOrder(String orderAsText) {
         String[] orderTokens = orderAsText.split(DELIMITER);
 
-        Order order = new Order();
-
-        order.setOrderNumber(Integer.parseInt(orderTokens[0]));
-        order.setOrderName(orderTokens[1]);
-        order.setState(orderTokens[2]);
-        order.setTaxRate(new BigDecimal(orderTokens[3]));
-        order.setProductType(orderTokens[4]);
-        order.setArea(new BigDecimal(orderTokens[5]));
-        order.setCostPerSquareFoot(new BigDecimal(orderTokens[6]));
-        order.setLabourCostPerSquareFoot(new BigDecimal(orderTokens[7]));
-        order.setMaterialCost(new BigDecimal(orderTokens[8]));
-        order.setLabourCost(new BigDecimal(orderTokens[9]));
-        order.setTax(new BigDecimal(orderTokens[10]));
-        order.setTotal(new BigDecimal(orderTokens[11]));
+        Order order = new Order(
+                Integer.parseInt(orderTokens[0]),
+                orderTokens[1],
+                orderTokens[2],
+                new BigDecimal(orderTokens[3]),
+                orderTokens[4],
+                new BigDecimal(orderTokens[5]),
+                new BigDecimal(orderTokens[6]),
+                new BigDecimal(orderTokens[7]),
+                new BigDecimal(orderTokens[8]),
+                new BigDecimal(orderTokens[9]),
+                new BigDecimal(orderTokens[10]),
+                new BigDecimal(orderTokens[11])
+        );
 
         return order;
     }

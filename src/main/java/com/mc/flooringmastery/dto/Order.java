@@ -5,10 +5,9 @@ import java.time.LocalDate;
 
 public class Order {
 
-    private int orderNumber;
+    private int orderNumber; // no setter
     private String orderName;
     private String state;
-    private LocalDate date;
     private BigDecimal taxRate;
     private String productType;
     private BigDecimal costPerSquareFoot;
@@ -20,13 +19,36 @@ public class Order {
     private BigDecimal total;
 
 
+    public Order(
+            int orderNumber,
+            String orderName,
+            String state,
+            BigDecimal taxRate,
+            String productType,
+            BigDecimal area,
+            BigDecimal costPerSquareFoot,
+            BigDecimal labourCostPerSquareFoot,
+            BigDecimal materialCost,
+            BigDecimal labourCost,
+            BigDecimal tax,
+            BigDecimal total
+    ) {
+        this.orderNumber = orderNumber;
+        this.orderName = orderName;
+        this.state = state;
+        this.taxRate = taxRate;
+        this.productType = productType;
+        this.area = area;
+        this.costPerSquareFoot = costPerSquareFoot;
+        this.labourCostPerSquareFoot = labourCostPerSquareFoot;
+        this.materialCost = materialCost;
+        this.labourCost = labourCost;
+        this.tax = tax;
+        this.total = total;
+    }
 
     public int getOrderNumber() {
         return orderNumber;
-    }
-
-    public void setOrderNumber(int orderNumber) {
-        this.orderNumber = orderNumber;
     }
 
     public String getOrderName() {
@@ -45,20 +67,8 @@ public class Order {
         this.state = state;
     }
 
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
     public BigDecimal getTaxRate() {
         return taxRate;
-    }
-
-    public void setTaxRate(BigDecimal taxRate) {
-        this.taxRate = taxRate;
     }
 
     public String getProductType() {
@@ -73,24 +83,12 @@ public class Order {
         return costPerSquareFoot;
     }
 
-    public void setCostPerSquareFoot(BigDecimal costPerSquareFoot) {
-        this.costPerSquareFoot = costPerSquareFoot;
-    }
-
     public BigDecimal getLabourCostPerSquareFoot() {
         return labourCostPerSquareFoot;
     }
 
-    public void setLabourCostPerSquareFoot(BigDecimal labourCostPerSquareFoot) {
-        this.labourCostPerSquareFoot = labourCostPerSquareFoot;
-    }
-
     public BigDecimal getMaterialCost() {
         return materialCost;
-    }
-
-    public void setMaterialCost(BigDecimal materialCost) {
-        this.materialCost = materialCost;
     }
 
     public BigDecimal getArea() {
@@ -105,24 +103,12 @@ public class Order {
         return labourCost;
     }
 
-    public void setLabourCost(BigDecimal labourCost) {
-        this.labourCost = labourCost;
-    }
-
     public BigDecimal getTax() {
         return tax;
     }
 
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
-    }
-
     public BigDecimal getTotal() {
         return total;
-    }
-
-    public void setTotal(BigDecimal total) {
-        this.total = total;
     }
 
     //OrderNumber, CustomerName, State, TaxRate, ProductType, Area, CostPerSquareFoot,
