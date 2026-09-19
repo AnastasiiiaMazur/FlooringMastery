@@ -189,11 +189,14 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     }
 
     private void validateDateFuture(LocalDate date) {
+        System.out.println("DEBUG DATE: " + date);
+        System.out.println("DEBUG TODAY: " + LocalDate.now());
         if (date == null || !date.isAfter(LocalDate.now())) {
             throw new FlooringMasteryDataValidationException(
                     "Order date must be in the future."
             );
         }
+
     }
 
     private void validateCustomerName(String name) {

@@ -1,8 +1,12 @@
 package com.mc.flooringmastery.ui;
 
 import com.mc.flooringmastery.dto.Order;
+import com.mc.flooringmastery.dto.Product;
+import com.mc.flooringmastery.dto.Tax;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public class FlooringMasteryView {
 
@@ -53,7 +57,66 @@ public class FlooringMasteryView {
         return io.readLocalDate("\nPlease enter the date for an order in a format yyyy-MM-dd: ");
     }
 
-//    public Order getNewOrderInfo() {
-//
-//    }
+    public String getCustomerName() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readString("* Enter the name: ");
+    }
+
+    public void displayAvailableStates(List<Tax> taxes) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* We accept orders in these states: ");
+        for (Tax tax : taxes) {
+            io.print("* " + tax.getState() + ", " + tax.getStateAbr());
+        }
+    }
+
+    public String getState() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readString("* Enter the state abbreviation: ");
+    }
+
+    public void displayAvailableProducts(List<Product> products) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* We accept orders with these materials: ");
+        for (Product product : products) {
+            io.print("* " + product.getProductType());
+        }
+    }
+
+    public String getProductType() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readString("* Enter the product type: ");
+    }
+
+    public BigDecimal getArea() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readBigDecimal("* Enter the area (min 100): ");
+    }
+
+    public void displayCompleteOrder(Order order) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* * * * * * * * * Here is your complete order! * * * * * * * * * * * *");
+        io.print("* Order name: " + order.getOrderName());
+        io.print("* Order area: " + order.getArea());
+        io.print("* Order state: " + order.getState());
+        io.print("* Order product type: " + order.getProductType());
+        io.print("* Order labour cost: " + order.getLabourCost());
+        io.print("* Order material cost: " + order.getMaterialCost());
+        io.print("* Order tax: " + order.getTax());
+        io.print("* Order total: " + order.getTotal());
+        io.print("* * * * * * * * * Here is your complete order! * * * * * * * * * * * *");
+    }
+
+    public boolean confirmation(String message) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* " + message);
+        String answer = io.readString("* Please type Y/N: ");
+        return answer.equalsIgnoreCase("Y");
+    }
+
+    public void displayOrderStatusMessage(String message) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* " + message);
+        io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+    }
 }

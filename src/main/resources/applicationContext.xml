@@ -22,5 +22,6 @@
 
     <bean id="controller" class="com.mc.flooringmastery.controller.FlooringMasteryController" >
         <constructor-arg ref="view" />
+        <constructor-arg ref="service"/>
     </bean>
 </beans>

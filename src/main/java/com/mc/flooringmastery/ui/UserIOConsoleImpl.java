@@ -71,15 +71,14 @@ public class UserIOConsoleImpl implements UserIO {
 
     @Override
     public LocalDate readLocalDate(String prompt) {
-        LocalDate userDate = LocalDate.now();
         print(prompt);
+
         try {
-            if (scanner.hasNextBigDecimal()) {
-                userDate = LocalDate.parse(scanner.nextLine());
-            }
+            return LocalDate.parse(scanner.nextLine());
         } catch (Exception ex) {
             print("Enter a valid date format!\n");
         }
-        return userDate;
+
+        return null;
     }
 }
