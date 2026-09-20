@@ -2,6 +2,7 @@ package com.mc.flooringmastery.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Order {
 
@@ -113,8 +114,7 @@ public class Order {
 
     //OrderNumber, CustomerName, State, TaxRate, ProductType, Area, CostPerSquareFoot,
     // LaborCostPerSquareFoot, MaterialCost, LaborCost, Tax, Total
-    @Override
-    public String toString() {
+    public String objectToString() {
         return orderNumber +
                 "::" + orderName +
                 "::" + state +
@@ -129,8 +129,33 @@ public class Order {
                 "::" + total;
     }
 
-// equals()
-    // toString()
-    // hashCode()
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Order)) return false;
+        Order order = (Order) o;
+        return getOrderNumber() == order.getOrderNumber() && Objects.equals(getOrderName(), order.getOrderName()) && Objects.equals(getState(), order.getState()) && Objects.equals(getTaxRate(), order.getTaxRate()) && Objects.equals(getProductType(), order.getProductType()) && Objects.equals(getCostPerSquareFoot(), order.getCostPerSquareFoot()) && Objects.equals(getLabourCostPerSquareFoot(), order.getLabourCostPerSquareFoot()) && Objects.equals(getMaterialCost(), order.getMaterialCost()) && Objects.equals(getArea(), order.getArea()) && Objects.equals(getLabourCost(), order.getLabourCost()) && Objects.equals(getTax(), order.getTax()) && Objects.equals(getTotal(), order.getTotal());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOrderNumber(), getOrderName(), getState(), getTaxRate(), getProductType(), getCostPerSquareFoot(), getLabourCostPerSquareFoot(), getMaterialCost(), getArea(), getLabourCost(), getTax(), getTotal());
+    }
+
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderNumber=" + orderNumber +
+                ", orderName='" + orderName + '\'' +
+                ", state='" + state + '\'' +
+                ", taxRate=" + taxRate +
+                ", productType='" + productType + '\'' +
+                ", costPerSquareFoot=" + costPerSquareFoot +
+                ", labourCostPerSquareFoot=" + labourCostPerSquareFoot +
+                ", materialCost=" + materialCost +
+                ", area=" + area +
+                ", labourCost=" + labourCost +
+                ", tax=" + tax +
+                ", total=" + total +
+                '}';
+    }
 }

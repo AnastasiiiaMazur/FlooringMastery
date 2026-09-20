@@ -19,6 +19,12 @@ public class OrderDaoFileImpl implements OrderDao {
     private HashMap<Integer, Order> orders = new HashMap<>();
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyy");
 
+    private String ordersDirectory = "Orders";
+
+    public void setOrdersDirectory(String ordersDirectory) {
+        this.ordersDirectory = ordersDirectory;
+    }
+
     @Override
     public List<Order> getAllOrders(LocalDate date) throws FlooringMasteryPersistenceException {
         loadOrdersForDate(date);
@@ -116,10 +122,17 @@ public class OrderDaoFileImpl implements OrderDao {
                 .collect(Collectors.toList());
     }
 
+//    private String getOrderFileName(LocalDate date) {
+//        String orderFileDate = date.format(formatter);
+//
+//        return "Orders/Orders_" + orderFileDate + ".txt";
+//    }
+
     private String getOrderFileName(LocalDate date) {
+
         String orderFileDate = date.format(formatter);
 
-        return "Orders/Orders_" + orderFileDate + ".txt";
+        return new File(ordersDirectory, "Orders_" + orderFileDate + ".txt").getPath();
     }
 
     private void writeOrders(String fileName) throws FlooringMasteryPersistenceException {
@@ -193,7 +206,7 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private String marshallOrder(Order order) {
-        return order.toString();
+        return order.objectToString();
     }
 
     private void loadOrdersForDate(LocalDate date) {
@@ -209,8 +222,8 @@ public class OrderDaoFileImpl implements OrderDao {
 
     // stream
     private File[] getOrderFiles() {
-        File ordersDirectory = new File("Orders");
-        File[] orderFiles = ordersDirectory.listFiles();
+        File directory = new File(ordersDirectory);
+        File[] orderFiles = directory.listFiles();
 
         if (orderFiles == null) {
             return new File[0];
