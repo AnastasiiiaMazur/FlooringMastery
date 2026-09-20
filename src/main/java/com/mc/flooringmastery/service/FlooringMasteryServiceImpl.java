@@ -149,6 +149,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return orderDao.getAvailableOrderDates();
     }
 
+    @Override
+    public List<Integer> getAvailableOrdersNum(LocalDate date) throws FlooringMasteryPersistenceException {
+        return orderDao.getOrderNumbers(date);
+    }
+
     // BigDecimal tax; calc = (materialCost + labourCost) * (taxrate/100)
     private BigDecimal calculateTax(
             BigDecimal materialCost,

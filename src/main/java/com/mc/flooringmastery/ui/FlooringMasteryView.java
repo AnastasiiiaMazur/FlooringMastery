@@ -7,6 +7,7 @@ import com.mc.flooringmastery.dto.Tax;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FlooringMasteryView {
 
@@ -93,9 +94,14 @@ public class FlooringMasteryView {
         return io.readBigDecimal("* Enter the area (min 100): ");
     }
 
-    public void displayCompleteOrder(Order order) {
+    public Integer getNum() {
         io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-        io.print("* * * * * * * * * Here is your complete order! * * * * * * * * * * * *");
+        return io.readInt("* Enter the order number: ");
+    }
+
+    public void displayCompleteOrder(Order order, String message) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* * * * * * * * * " + message + " * * * * * * * * * * * *");
         io.print("* Order name: " + order.getOrderName());
         io.print("* Order area: " + order.getArea());
         io.print("* Order state: " + order.getState());
@@ -104,7 +110,7 @@ public class FlooringMasteryView {
         io.print("* Order material cost: " + order.getMaterialCost());
         io.print("* Order tax: " + order.getTax());
         io.print("* Order total: " + order.getTotal());
-        io.print("* * * * * * * * * Here is your complete order! * * * * * * * * * * * *");
+        io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
     }
 
     public boolean confirmation(String message) {
@@ -122,7 +128,7 @@ public class FlooringMasteryView {
 
     public void displayAvailableDates(List<LocalDate> dates) {
         io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
-        io.print("* Available dates:");
+        io.print("* Available order dates:");
         for (LocalDate date : dates) {
             io.print("* " + date);
         }
@@ -150,5 +156,15 @@ public class FlooringMasteryView {
             io.print("*");
             io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         }
+    }
+
+    public void displayOrderNums(List<Integer> nums) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+
+        String orderNums = nums.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+
+        io.print("* Available order numbers: " + orderNums);
     }
 }

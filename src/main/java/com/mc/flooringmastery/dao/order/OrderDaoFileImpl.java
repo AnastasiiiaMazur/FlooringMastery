@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrderDaoFileImpl implements OrderDao {
 
@@ -60,27 +61,17 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     @Override
-    public int getHighestOrderNumber() throws FlooringMasteryPersistenceException {
-
-        File ordersDirectory = new File("Orders");
-        File[] orderFiles = ordersDirectory.listFiles();
+    public int getHighestOrderNumber()
+            throws FlooringMasteryPersistenceException {
 
         int highestOrderNumber = 0;
 
-        if (orderFiles == null) {
-            return highestOrderNumber;
-        }
+        for (File orderFile : getOrderFiles()) {
+            loadOrders(orderFile.getPath());
 
-        for (File orderFile : orderFiles) {
-
-            if (orderFile.isFile() && orderFile.getName().startsWith("Orders_")) {
-
-                loadOrders(orderFile.getPath());
-
-                for (Order order : orders.values()) {
-                    if (order.getOrderNumber() > highestOrderNumber) {
-                        highestOrderNumber = order.getOrderNumber();
-                    }
+            for (Order order : orders.values()) {
+                if (order.getOrderNumber() > highestOrderNumber) {
+                    highestOrderNumber = order.getOrderNumber();
                 }
             }
         }
@@ -92,14 +83,7 @@ public class OrderDaoFileImpl implements OrderDao {
     public List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException {
         List<LocalDate> dates = new ArrayList<>();
 
-        File ordersDirectory = new File("Orders");
-        File[] orderFiles = ordersDirectory.listFiles();
-
-        if (orderFiles == null) {
-            return dates;
-        }
-
-        for (File orderFile : orderFiles) {
+        for (File orderFile : getOrderFiles()) {
 
             if (orderFile.isFile() && orderFile.getName().startsWith("Orders_") && orderFile.getName().endsWith(".txt")) {
 
@@ -117,6 +101,19 @@ public class OrderDaoFileImpl implements OrderDao {
         dates.sort(Comparator.naturalOrder());
 
         return dates;
+    }
+
+    // stream
+    @Override
+    public List<Integer> getOrderNumbers(LocalDate date)
+            throws FlooringMasteryPersistenceException {
+
+        loadOrdersForDate(date);
+
+        return orders.keySet()
+                .stream()
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     private String getOrderFileName(LocalDate date) {
@@ -208,6 +205,22 @@ public class OrderDaoFileImpl implements OrderDao {
         } else {
             orders.clear();
         }
+    }
+
+    // stream
+    private File[] getOrderFiles() {
+        File ordersDirectory = new File("Orders");
+        File[] orderFiles = ordersDirectory.listFiles();
+
+        if (orderFiles == null) {
+            return new File[0];
+        }
+
+        return Arrays.stream(orderFiles)
+                .filter(File::isFile)
+                .filter(file -> file.getName().startsWith("Orders_"))
+                .filter(file -> file.getName().endsWith(".txt"))
+                .toArray(File[]::new);
     }
 }
 

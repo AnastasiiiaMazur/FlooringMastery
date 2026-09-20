@@ -20,18 +20,18 @@ public class UserIOConsoleImpl implements UserIO {
         return scanner.nextLine();
     }
 
+
     @Override
     public int readInt(String prompt) {
-        int response = 0;
 
-        print(prompt);
-        try {
-            response = Integer.parseInt(scanner.nextLine());
-        } catch (NumberFormatException ex) {
-            print("Enter a number.");
+        while (true) {
+            try {
+                print(prompt);
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException ex) {
+                print("Please enter a valid number!\n");
+            }
         }
-
-        return response;
     }
 
     @Override

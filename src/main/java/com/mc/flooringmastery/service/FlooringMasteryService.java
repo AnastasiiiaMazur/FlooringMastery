@@ -58,4 +58,6 @@ public interface FlooringMasteryService {
             throws FlooringMasteryDataValidationException;
 
     List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException;
+
+    List<Integer> getAvailableOrdersNum(LocalDate date) throws FlooringMasteryPersistenceException;
 }

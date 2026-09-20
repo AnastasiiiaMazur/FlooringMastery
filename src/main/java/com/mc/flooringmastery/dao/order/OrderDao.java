@@ -21,4 +21,6 @@ public interface OrderDao {
     int getHighestOrderNumber() throws FlooringMasteryPersistenceException;
 
     List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException;
+
+    List<Integer> getOrderNumbers(LocalDate date) throws FlooringMasteryPersistenceException;
 }

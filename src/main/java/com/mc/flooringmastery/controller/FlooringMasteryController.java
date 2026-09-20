@@ -111,7 +111,7 @@ public class FlooringMasteryController {
             Order complete = service.createOrder(date, name, state, productType, area);
 
             // View displays completed order
-            view.displayCompleteOrder(complete);
+            view.displayCompleteOrder(complete, "Here is your complete order!");
 
             // Ask for confirmation
             if (view.confirmation("Would you like to place this order?")) {
@@ -174,26 +174,49 @@ public class FlooringMasteryController {
     private void removeOrder() {
         try {
             // 1. Ask View for date
-
+            List<LocalDate> dates = service.getAvailableOrderDates();
+            if (dates.isEmpty()) {
+                view.displayOrderStatusMessage("There are no orders available.");
+                return;
+            }
+            view.displayAvailableDates(dates);
+            LocalDate userDate = dateValidation();
             // 2. Ask View for order number
+            List<Integer> orderNumbers = service.getAvailableOrdersNum(userDate);
+            if (orderNumbers.isEmpty()) {
+                view.displayOrderStatusMessage("There are no orders available for this date.");
+                return;
+            }
 
+            view.displayOrderNums(orderNumbers);
+
+            int num;
+            while (true) {
+                num = view.getNum();
+
+                if (orderNumbers.contains(num)) {
+                    break;
+                }
+                view.displayErrorMessage("Please select an available order number.");
+            }
             // 3. Service gets the order
             //    If it doesn't exist, Service throws validation exception
+            Order order = service.getOrder(userDate, num);
 
             // 4. View displays the order
-
+            view.displayCompleteOrder(order, "Order " + order.getOrderNumber());
             // 5. Ask user to confirm removal
-
-            // 6. If confirmed:
-            //        Service removes the order
-            //        display success message
-            //     Otherwise:
-            //        display cancellation message
+            if (view.confirmation("Would you like to delete this order?")) {
+                service.removeOrder(userDate, order.getOrderNumber());
+                view.displayOrderStatusMessage("Order was deleted successfully!");
+            } else {
+                view.displayOrderStatusMessage("Order deletion cancelled!");
+            }
 
         } catch (FlooringMasteryDataValidationException e) {
-            // display validation error
+            view.displayErrorMessage(e.getMessage());
         } catch (FlooringMasteryPersistenceException e) {
-            // display file/persistence error
+            view.displayErrorMessage(e.getMessage());
         }
     }
 
