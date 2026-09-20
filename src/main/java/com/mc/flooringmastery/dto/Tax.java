@@ -1,6 +1,7 @@
 package com.mc.flooringmastery.dto;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Tax {
 
@@ -24,5 +25,26 @@ public class Tax {
 
     public BigDecimal getTaxRate() {
         return taxRate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Tax)) return false;
+        Tax tax = (Tax) o;
+        return Objects.equals(getState(), tax.getState()) && Objects.equals(getStateAbr(), tax.getStateAbr()) && Objects.equals(getTaxRate(), tax.getTaxRate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getState(), getStateAbr(), getTaxRate());
+    }
+
+    @Override
+    public String toString() {
+        return "Tax{" +
+                "state='" + state + '\'' +
+                ", stateAbr='" + stateAbr + '\'' +
+                ", taxRate=" + taxRate +
+                '}';
     }
 }

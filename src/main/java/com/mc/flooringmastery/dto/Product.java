@@ -1,6 +1,7 @@
 package com.mc.flooringmastery.dto;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Product {
 
@@ -26,4 +27,24 @@ public class Product {
         return labourCostPerSquareFoot;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Product)) return false;
+        Product product = (Product) o;
+        return Objects.equals(getProductType(), product.getProductType()) && Objects.equals(getCostPerSquareFoot(), product.getCostPerSquareFoot()) && Objects.equals(getLabourCostPerSquareFoot(), product.getLabourCostPerSquareFoot());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProductType(), getCostPerSquareFoot(), getLabourCostPerSquareFoot());
+    }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "productType='" + productType + '\'' +
+                ", costPerSquareFoot=" + costPerSquareFoot +
+                ", labourCostPerSquareFoot=" + labourCostPerSquareFoot +
+                '}';
+    }
 }
