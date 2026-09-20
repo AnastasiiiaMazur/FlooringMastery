@@ -19,4 +19,6 @@ public interface OrderDao {
     Order removeOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException;
 
     int getHighestOrderNumber() throws FlooringMasteryPersistenceException;
+
+    List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException;
 }

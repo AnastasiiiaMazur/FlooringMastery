@@ -8,9 +8,13 @@ import com.mc.flooringmastery.dto.Order;
 import com.mc.flooringmastery.dto.Product;
 import com.mc.flooringmastery.dto.Tax;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class FlooringMasteryServiceImpl implements FlooringMasteryService {
@@ -138,6 +142,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     @Override
     public void validateOrderArea(BigDecimal area) {
         validateArea(area);
+    }
+
+    @Override
+    public List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException {
+        return orderDao.getAvailableOrderDates();
     }
 
     // BigDecimal tax; calc = (materialCost + labourCost) * (taxrate/100)

@@ -50,10 +50,10 @@ public class FlooringMasteryController {
                 addOrder();
                 break;
             case 3: // edit an order
-                System.out.println("TODO");
+                editOrder();
                 break;
             case 4: // remove an order
-                System.out.println("TODO");
+                removeOrder();
                 break;
             case 5: // backup data
                 System.out.println("TODO");
@@ -66,39 +66,54 @@ public class FlooringMasteryController {
     }
 
     private void displayAllOrders() {
-        LocalDate date = view.getDate();
-        // send date to the service
-        // return list of orders
-        // pass list to the view
-        // display orders
+        try {
+            // Get available order dates from Service
+            List<LocalDate> dates = service.getAvailableOrderDates();
+            if (dates.isEmpty()) {
+                view.displayOrderStatusMessage("There are no orders available.");
+                return;
+            }
+
+            // View displays available dates and asks for the date
+            view.displayAvailableDates(dates);
+            LocalDate userDate = dateValidation();
+
+            // Service gets all orders for that date
+            List<Order> orders = service.getAllOrders(userDate);
+
+            // View displays the orders
+            view.displayAllOrdersForDate(userDate, orders);
+        } catch (FlooringMasteryPersistenceException e) {
+            view.displayErrorMessage(e.getMessage());
+        }
     }
 
     private void addOrder() {
         try {
-            // 1. Ask View for date
+            // Ask View for date
             LocalDate date = dateValidation();
 
-            // 2. Ask View for customer name
+            // Ask View for customer name
             String name = nameValidation();
 
-            // 3. Display available states and get state
+            // Display available states and get state
             view.displayAvailableStates(service.getAllTaxes());
             String state = stateValidation();
 
-            // 4. Display available products and get product
+            // Display available products and get product
             view.displayAvailableProducts(service.getAllProducts());
             String productType = productValidation();
 
-            // 5. Ask for area
+            // Ask for area
             BigDecimal area = areaValidation();
 
-            // 6. service.createOrder(...)
+            // service.createOrder(...)
             Order complete = service.createOrder(date, name, state, productType, area);
 
-            // 7. View displays completed order
+            // View displays completed order
             view.displayCompleteOrder(complete);
 
-            // 8. Ask for confirmation
+            // Ask for confirmation
             if (view.confirmation("Would you like to place this order?")) {
                 service.addOrder(date, complete);
                 view.displayOrderStatusMessage("Order was accepted successfully!");
@@ -115,11 +130,71 @@ public class FlooringMasteryController {
     }
 
     private void editOrder() {
+        try {
+            // 1. Ask View for date
 
+            // 2. Ask View for order number
+
+            // 3. Service gets the existing order
+            //    If it doesn't exist, Service throws validation exception
+
+            // 4. View displays the existing order
+
+            // 5. Ask View for new customer name
+            //    Blank input should keep existing value
+
+            // 6. Display available states and ask for new state
+            //    Blank input should keep existing value
+
+            // 7. Display available products and ask for new product
+            //    Blank input should keep existing value
+
+            // 8. Ask View for new area
+            //    Blank input should keep existing value
+
+            // 9. Service creates/recalculates the edited order
+
+            // 10. View displays the updated order
+
+            // 11. Ask user to confirm the edit
+
+            // 12. If confirmed:
+            //        save edited order through Service
+            //        display success message
+            //     Otherwise:
+            //        display cancellation message
+
+        } catch (FlooringMasteryDataValidationException e) {
+            // display validation error
+        } catch (FlooringMasteryPersistenceException e) {
+            // display file/persistence error
+        }
     }
 
     private void removeOrder() {
+        try {
+            // 1. Ask View for date
 
+            // 2. Ask View for order number
+
+            // 3. Service gets the order
+            //    If it doesn't exist, Service throws validation exception
+
+            // 4. View displays the order
+
+            // 5. Ask user to confirm removal
+
+            // 6. If confirmed:
+            //        Service removes the order
+            //        display success message
+            //     Otherwise:
+            //        display cancellation message
+
+        } catch (FlooringMasteryDataValidationException e) {
+            // display validation error
+        } catch (FlooringMasteryPersistenceException e) {
+            // display file/persistence error
+        }
     }
 
     private void exitMessage() { view.displayExitMessage(); }

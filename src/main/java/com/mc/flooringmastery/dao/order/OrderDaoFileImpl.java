@@ -8,10 +8,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class OrderDaoFileImpl implements OrderDao {
 
@@ -89,6 +86,37 @@ public class OrderDaoFileImpl implements OrderDao {
         }
 
         return highestOrderNumber;
+    }
+
+    @Override
+    public List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException {
+        List<LocalDate> dates = new ArrayList<>();
+
+        File ordersDirectory = new File("Orders");
+        File[] orderFiles = ordersDirectory.listFiles();
+
+        if (orderFiles == null) {
+            return dates;
+        }
+
+        for (File orderFile : orderFiles) {
+
+            if (orderFile.isFile() && orderFile.getName().startsWith("Orders_") && orderFile.getName().endsWith(".txt")) {
+
+                String fileName = orderFile.getName();
+
+                String dateAsText = fileName
+                        .replace("Orders_", "")
+                        .replace(".txt", "");
+
+                LocalDate newDate = LocalDate.parse(dateAsText, formatter);
+                dates.add(newDate);
+            }
+        }
+
+        dates.sort(Comparator.naturalOrder());
+
+        return dates;
     }
 
     private String getOrderFileName(LocalDate date) {

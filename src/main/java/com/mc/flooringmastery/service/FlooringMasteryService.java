@@ -56,4 +56,6 @@ public interface FlooringMasteryService {
 
     void validateOrderArea(BigDecimal area)
             throws FlooringMasteryDataValidationException;
+
+    List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException;
 }

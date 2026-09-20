@@ -119,4 +119,36 @@ public class FlooringMasteryView {
         io.print("* " + message);
         io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
     }
+
+    public void displayAvailableDates(List<LocalDate> dates) {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* Available dates:");
+        for (LocalDate date : dates) {
+            io.print("* " + date);
+        }
+        io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+    }
+
+    public void displayAllOrdersForDate(LocalDate userDate, List<Order> orders) {
+        if (orders.isEmpty()) {
+            io.print("* No orders found for this date.");
+            return;
+        }
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        io.print("* Orders for the date " + userDate);
+        for (Order order : orders) {
+            io.print("*");
+            io.print("* Order " + order.getOrderNumber());
+            io.print("* Order name: " + order.getOrderName());
+            io.print("* Order area: " + order.getArea());
+            io.print("* Order state: " + order.getState());
+            io.print("* Order product type: " + order.getProductType());
+            io.print("* Order labour cost: " + order.getLabourCost());
+            io.print("* Order material cost: " + order.getMaterialCost());
+            io.print("* Order tax: " + order.getTax());
+            io.print("* Order total: " + order.getTotal());
+            io.print("*");
+            io.print("* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        }
+    }
 }
