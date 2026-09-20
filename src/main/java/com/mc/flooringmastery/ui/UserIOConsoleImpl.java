@@ -69,6 +69,24 @@ public class UserIOConsoleImpl implements UserIO {
         }
     }
 
+    public BigDecimal readBigDecimalOrNull(String prompt) {
+        while (true) {
+            try {
+                print(prompt);
+                String input = scanner.nextLine();
+
+                if (input.trim().isEmpty()) {
+                    return null;
+                }
+
+                return new BigDecimal(input);
+
+            } catch (NumberFormatException ex) {
+                print("Enter a valid decimal number!\n");
+            }
+        }
+    }
+
     @Override
     public LocalDate readLocalDateOnce(String prompt) {
         print(prompt);

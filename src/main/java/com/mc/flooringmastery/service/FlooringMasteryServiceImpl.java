@@ -154,6 +154,23 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return orderDao.getOrderNumbers(date);
     }
 
+    @Override
+    public Order createEditedOrder(
+            int orderNumber,
+            String customerName,
+            String state,
+            String productTypeUser,
+            BigDecimal area) {
+
+        return buildOrder(
+                orderNumber,
+                customerName,
+                state,
+                productTypeUser,
+                area
+        );
+    }
+
     // BigDecimal tax; calc = (materialCost + labourCost) * (taxrate/100)
     private BigDecimal calculateTax(
             BigDecimal materialCost,
@@ -280,17 +297,13 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         BigDecimal costPerSquareFoot = product.getCostPerSquareFoot();
         BigDecimal labourCostPerSquareFoot = product.getLabourCostPerSquareFoot();
 
-        BigDecimal materialCost =
-                calculateMaterialCost(area, costPerSquareFoot);
+        BigDecimal materialCost = calculateMaterialCost(area, costPerSquareFoot);
 
-        BigDecimal labourCost =
-                calculateLabourCost(area, labourCostPerSquareFoot);
+        BigDecimal labourCost = calculateLabourCost(area, labourCostPerSquareFoot);
 
-        BigDecimal taxCalc =
-                calculateTax(materialCost, labourCost, taxRate);
+        BigDecimal taxCalc = calculateTax(materialCost, labourCost, taxRate);
 
-        BigDecimal total =
-                calculateTotal(materialCost, labourCost, taxCalc);
+        BigDecimal total = calculateTotal(materialCost, labourCost, taxCalc);
 
         return new Order(
                 orderNumber,

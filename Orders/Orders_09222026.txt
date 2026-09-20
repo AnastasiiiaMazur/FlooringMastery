@@ -1,1 +1,2 @@
 OrderNumber::CustomerName::State::TaxRate::ProductType::Area::CostPerSquareFoot::LaborCostPerSquareFoot::MaterialCost::LaborCost::Tax::Total
+5::Jason Smith::WA::9.25::Wood::220.09::5.15::4.75::1133.46::1045.43::201.55::2380.44

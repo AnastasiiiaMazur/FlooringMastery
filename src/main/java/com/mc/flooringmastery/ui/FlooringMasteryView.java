@@ -94,6 +94,11 @@ public class FlooringMasteryView {
         return io.readBigDecimal("* Enter the area (min 100): ");
     }
 
+    public BigDecimal getEditedArea() {
+        io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
+        return io.readBigDecimalOrNull("* Enter the area (min 100): ");
+    }
+
     public Integer getNum() {
         io.print("\n* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *");
         return io.readInt("* Enter the order number: ");

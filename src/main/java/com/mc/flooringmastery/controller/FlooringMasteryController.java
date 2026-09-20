@@ -56,7 +56,7 @@ public class FlooringMasteryController {
                 removeOrder();
                 break;
             case 5: // backup data
-                System.out.println("TODO");
+                System.out.println("Not implemented in this version!");
                 break;
             case 6: // quit
                 isRunning = false;
@@ -131,49 +131,6 @@ public class FlooringMasteryController {
 
     private void editOrder() {
         try {
-            // 1. Ask View for date
-
-            // 2. Ask View for order number
-
-            // 3. Service gets the existing order
-            //    If it doesn't exist, Service throws validation exception
-
-            // 4. View displays the existing order
-
-            // 5. Ask View for new customer name
-            //    Blank input should keep existing value
-
-            // 6. Display available states and ask for new state
-            //    Blank input should keep existing value
-
-            // 7. Display available products and ask for new product
-            //    Blank input should keep existing value
-
-            // 8. Ask View for new area
-            //    Blank input should keep existing value
-
-            // 9. Service creates/recalculates the edited order
-
-            // 10. View displays the updated order
-
-            // 11. Ask user to confirm the edit
-
-            // 12. If confirmed:
-            //        save edited order through Service
-            //        display success message
-            //     Otherwise:
-            //        display cancellation message
-
-        } catch (FlooringMasteryDataValidationException e) {
-            // display validation error
-        } catch (FlooringMasteryPersistenceException e) {
-            // display file/persistence error
-        }
-    }
-
-    private void removeOrder() {
-        try {
-            // 1. Ask View for date
             List<LocalDate> dates = service.getAvailableOrderDates();
             if (dates.isEmpty()) {
                 view.displayOrderStatusMessage("There are no orders available.");
@@ -181,31 +138,90 @@ public class FlooringMasteryController {
             }
             view.displayAvailableDates(dates);
             LocalDate userDate = dateValidation();
-            // 2. Ask View for order number
-            List<Integer> orderNumbers = service.getAvailableOrdersNum(userDate);
-            if (orderNumbers.isEmpty()) {
-                view.displayOrderStatusMessage("There are no orders available for this date.");
+
+            Integer orderNumber = getOrderNumber(userDate);
+            if (orderNumber == null) {
                 return;
             }
 
-            view.displayOrderNums(orderNumbers);
+            Order order = service.getOrder(userDate, orderNumber);
+            view.displayCompleteOrder(order, "Order " + order.getOrderNumber());
 
-            int num;
-            while (true) {
-                num = view.getNum();
+            // name
+            String name = view.getCustomerName();
 
-                if (orderNumbers.contains(num)) {
-                    break;
-                }
-                view.displayErrorMessage("Please select an available order number.");
+            if (name.trim().isEmpty()) {
+                name = order.getOrderName();
+            } else {
+                service.validateCustomer(name);
             }
-            // 3. Service gets the order
-            //    If it doesn't exist, Service throws validation exception
+
+            // state
+            view.displayAvailableStates(service.getAllTaxes());
+            String state = view.getState();
+
+            if (state.trim().isEmpty()) {
+                state = order.getState();
+            } else {
+                service.validateState(state);
+            }
+
+            // product type
+            view.displayAvailableProducts(service.getAllProducts());
+            String productType = view.getProductType();
+
+            if (productType.trim().isEmpty()) {
+                productType = order.getProductType();
+            } else {
+                service.validateProduct(productType);
+            }
+
+            // area
+            BigDecimal area = view.getEditedArea();
+
+            if (area == null) {
+                area = order.getArea();
+            } else {
+                service.validateOrderArea(area);
+            }
+
+            Order newOrder = service.createEditedOrder(orderNumber, name, state, productType, area);
+            view.displayCompleteOrder(newOrder, "Here is your updated order");
+
+            if (view.confirmation("Would you like to update this order?")) {
+                service.editOrder(userDate, orderNumber, name, state, productType, area);
+                view.displayOrderStatusMessage("Order was updated successfully!");
+            } else {
+                view.displayOrderStatusMessage("Order update cancelled!");
+            }
+
+        } catch (FlooringMasteryDataValidationException e) {
+            view.displayErrorMessage(e.getMessage());
+        } catch (FlooringMasteryPersistenceException e) {
+            view.displayErrorMessage(e.getMessage());
+        }
+    }
+
+    private void removeOrder() {
+        try {
+            List<LocalDate> dates = service.getAvailableOrderDates();
+            if (dates.isEmpty()) {
+                view.displayOrderStatusMessage("There are no orders available.");
+                return;
+            }
+            view.displayAvailableDates(dates);
+            LocalDate userDate = dateValidation();
+
+            Integer num = getOrderNumber(userDate);
+
+            if (num == null) {
+                return;
+            }
+
             Order order = service.getOrder(userDate, num);
 
-            // 4. View displays the order
             view.displayCompleteOrder(order, "Order " + order.getOrderNumber());
-            // 5. Ask user to confirm removal
+
             if (view.confirmation("Would you like to delete this order?")) {
                 service.removeOrder(userDate, order.getOrderNumber());
                 view.displayOrderStatusMessage("Order was deleted successfully!");
@@ -298,5 +314,27 @@ public class FlooringMasteryController {
         }
 
         return area;
+    }
+
+    private Integer getOrderNumber(LocalDate date) {
+        List<Integer> orderNumbers = service.getAvailableOrdersNum(date);
+        if (orderNumbers.isEmpty()) {
+            view.displayOrderStatusMessage("There are no orders available for this date.");
+            return null;
+        }
+
+        view.displayOrderNums(orderNumbers);
+
+        int num;
+        while (true) {
+            num = view.getNum();
+
+            if (orderNumbers.contains(num)) {
+                break;
+            }
+            view.displayErrorMessage("Please select an available order number.");
+        }
+
+        return num;
     }
 }

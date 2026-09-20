@@ -60,4 +60,6 @@ public interface FlooringMasteryService {
     List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException;
 
     List<Integer> getAvailableOrdersNum(LocalDate date) throws FlooringMasteryPersistenceException;
+
+    Order createEditedOrder(int orderNumber, String customerName, String state, String productTypeUser, BigDecimal area);
 }
