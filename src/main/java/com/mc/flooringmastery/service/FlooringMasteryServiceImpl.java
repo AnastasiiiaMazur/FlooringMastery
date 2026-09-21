@@ -41,6 +41,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
         Order order = orderDao.getOrder(date, orderNumber);
 
+        // ensure the requested order exists
         if (order == null) {
             throw new FlooringMasteryDataValidationException(
                     "Order does not exist."
@@ -70,8 +71,10 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
             throws FlooringMasteryPersistenceException,
             FlooringMasteryDataValidationException {
 
+        // new orders can only be created for a future date
         validateDateFuture(date);
 
+        // assign the next available order number
         int orderNumber = getOrderNum();
 
         return buildOrder(
@@ -98,6 +101,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
             String productTypeUser,
             BigDecimal area) throws FlooringMasteryPersistenceException, FlooringMasteryDataValidationException {
 
+        // verify the order exists before rebuilding it with updated values
         Order existingOrder = getOrder(date, orderNumber);
         Order editedOrder = buildOrder(
                 existingOrder.getOrderNumber(),
@@ -114,6 +118,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
             throws FlooringMasteryPersistenceException,
             FlooringMasteryDataValidationException {
 
+        // verify the order exists before removing it
         getOrder(date, orderNumber);
 
         return orderDao.removeOrder(date, orderNumber);
@@ -162,6 +167,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
             String productTypeUser,
             BigDecimal area) {
 
+        // rebuild the order so dependent values are recalculated
         return buildOrder(
                 orderNumber,
                 customerName,
@@ -171,6 +177,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         );
     }
 
+    // calculate tax from material and labour costs
     // BigDecimal tax; calc = (materialCost + labourCost) * (taxrate/100)
     private BigDecimal calculateTax(
             BigDecimal materialCost,
@@ -187,6 +194,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return res.setScale(2, RoundingMode.HALF_EVEN);
     }
 
+    // calculate labour cost based on area
     // BigDecimal labourCost; calc = area * labourCostPerSquareFoot
     private BigDecimal calculateLabourCost(BigDecimal area, BigDecimal labourCostPerSquareFoot) {
         BigDecimal res = area.multiply(labourCostPerSquareFoot);
@@ -194,6 +202,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return res;
     }
 
+    // calculate material cost based on area
     // BigDecimal materialCost; calc = area * costPerSquareFoot
     private BigDecimal calculateMaterialCost(BigDecimal area, BigDecimal costPerSquareFoot) {
         BigDecimal res = area.multiply(costPerSquareFoot);
@@ -201,6 +210,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         return res;
     }
 
+    // calculate the final order total
     // BigDecimal total; calc = materialCost + labourCost + tax
     private BigDecimal calculateTotal(BigDecimal materialCost, BigDecimal labourCost, BigDecimal tax) {
         BigDecimal res = materialCost.add(labourCost).add(tax);
@@ -210,6 +220,8 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
     private Tax getTaxForState(String state) {
         List<Tax> taxes = getAllTaxes();
+
+        // find the matching state and its tax information
         for (Tax tax : taxes) {
             if (tax.getStateAbr().equalsIgnoreCase(state)) {
                 return tax;
@@ -223,6 +235,8 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
     private Product getProduct(String productType) {
         List<Product> products = getAllProducts();
+
+        // find the matching product and its pricing information
         for (Product product : products) {
             if (product.getProductType().equalsIgnoreCase(productType)) {
                 return product;
@@ -237,6 +251,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     private void validateArea(BigDecimal userArea) {
         BigDecimal minArea = new BigDecimal("100");
 
+        // area must meet the minimum order requirement
         if (userArea == null || userArea.compareTo(minArea) < 0) {
             throw new FlooringMasteryDataValidationException(
                     "Area must be at least 100 square feet."
@@ -245,6 +260,7 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
     }
 
     private void validateDateFuture(LocalDate date) {
+        // new order date must be later than today
         if (date == null || !date.isAfter(LocalDate.now())) {
             throw new FlooringMasteryDataValidationException(
                     "Order date must be in the future."
@@ -255,26 +271,19 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
 
     private void validateCustomerName(String name) {
 
+        // customer name cannot be blank
         if (name == null || name.trim().isEmpty()) {
             throw new FlooringMasteryDataValidationException("Customer name cannot be empty.");
         }
 
+        // customer name can only contain supported characters
         if (!name.matches("[a-zA-Z0-9., ]+")) {
             throw new FlooringMasteryDataValidationException("Customer name contains invalid characters.");
         }
     }
 
     private int getOrderNum() {
-//        List<Order> allOrders = orderDao.getAllOrders(date);
-//
-//        int highestOrderNumber = 0;
-//
-//        for (Order order : allOrders) {
-//            if (order.getOrderNumber() > highestOrderNumber) {
-//                highestOrderNumber = order.getOrderNumber();
-//            }
-//        }
-//        return highestOrderNumber + 1;
+        // order numbers are unique across all order files
         return orderDao.getHighestOrderNumber() + 1;
     }
 
@@ -285,9 +294,11 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
             String productTypeUser,
             BigDecimal area) {
 
+        // validate user supplied order information
         validateArea(area);
         validateCustomerName(customerName);
 
+        // retrieve tax and product information used for calculations
         Tax tax = getTaxForState(state);
         Product product = getProduct(productTypeUser);
 
@@ -297,14 +308,13 @@ public class FlooringMasteryServiceImpl implements FlooringMasteryService {
         BigDecimal costPerSquareFoot = product.getCostPerSquareFoot();
         BigDecimal labourCostPerSquareFoot = product.getLabourCostPerSquareFoot();
 
+        // calculate all derived order costs
         BigDecimal materialCost = calculateMaterialCost(area, costPerSquareFoot);
-
         BigDecimal labourCost = calculateLabourCost(area, labourCostPerSquareFoot);
-
         BigDecimal taxCalc = calculateTax(materialCost, labourCost, taxRate);
-
         BigDecimal total = calculateTotal(materialCost, labourCost, taxCalc);
 
+        // create the completed order with validated and calculated values
         return new Order(
                 orderNumber,
                 customerName,

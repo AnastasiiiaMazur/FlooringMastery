@@ -15,21 +15,23 @@ import java.util.Scanner;
 public class TaxDaoFileImpl implements TaxDao {
 
     private HashMap<String, Tax> taxes = new HashMap<>();
-    public static final String PRODUCT_FILE = "Data/Taxes.txt";
+    public static final String TAX_FILE = "Data/Taxes.txt";
     public static final String DELIMITER = ",";
 
     @Override
     public List<Tax> getAllTaxes() throws FlooringMasteryPersistenceException {
+        // load tax data from file
         loadTaxes();
         return new ArrayList<>(taxes.values());
     }
 
     private void loadTaxes() throws FlooringMasteryPersistenceException {
+        // clear existing data before loading the file
         taxes.clear();
         Scanner scanner;
 
         try {
-            scanner = new Scanner(new BufferedReader(new FileReader(PRODUCT_FILE)));
+            scanner = new Scanner(new BufferedReader(new FileReader(TAX_FILE)));
         } catch (FileNotFoundException e) {
             throw new FlooringMasteryPersistenceException("No such file exists!");
         }
@@ -37,10 +39,12 @@ public class TaxDaoFileImpl implements TaxDao {
         String currentLine;
         Tax currentTax;
 
+        // skip the header
         if (scanner.hasNextLine()) {
             scanner.nextLine();
         }
 
+        // read and store each tax record by state abbreviation
         while (scanner.hasNextLine()) {
             currentLine = scanner.nextLine();
             currentTax = unmarshallTax(currentLine);
@@ -52,6 +56,7 @@ public class TaxDaoFileImpl implements TaxDao {
     }
 
     private Tax unmarshallTax(String taxAsText) {
+        // convert file data into a tax object
         String[] taxTokens = taxAsText.split(DELIMITER);
 
         Tax tax = new Tax(

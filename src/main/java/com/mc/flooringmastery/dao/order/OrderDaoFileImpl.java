@@ -27,12 +27,14 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public List<Order> getAllOrders(LocalDate date) throws FlooringMasteryPersistenceException {
+        // load orders for the selected date
         loadOrdersForDate(date);
         return new ArrayList<>(orders.values());
     }
 
     @Override
     public Order getOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException {
+        // load orders for the selected date and retrieve by order number
         loadOrdersForDate(date);
 
         return orders.get(orderNumber);
@@ -40,6 +42,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public Order addOrder(LocalDate date, Order order) throws FlooringMasteryPersistenceException{
+        // load existing orders before adding and saving the new order
         loadOrdersForDate(date);
         orders.put(order.getOrderNumber(), order);
         writeOrders(getOrderFileName(date));
@@ -49,6 +52,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public Order editOrder(LocalDate date, Order order) throws FlooringMasteryPersistenceException {
+        // replace the existing order and save the updated data
         loadOrdersForDate(date);
         orders.put(order.getOrderNumber(), order);
         writeOrders(getOrderFileName(date));
@@ -58,7 +62,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
     @Override
     public Order removeOrder(LocalDate date, int orderNumber) throws FlooringMasteryPersistenceException {
-
+        // remove the selected order and save the remaining data
         loadOrdersForDate(date);
         Order removedOrder = orders.remove(orderNumber);
         writeOrders(getOrderFileName(date));
@@ -72,6 +76,7 @@ public class OrderDaoFileImpl implements OrderDao {
 
         int highestOrderNumber = 0;
 
+        // search all order files for the highest existing order number
         for (File orderFile : getOrderFiles()) {
             loadOrders(orderFile.getPath());
 
@@ -89,6 +94,7 @@ public class OrderDaoFileImpl implements OrderDao {
     public List<LocalDate> getAvailableOrderDates() throws FlooringMasteryPersistenceException {
         List<LocalDate> dates = new ArrayList<>();
 
+        // extract order dates from existing order file names
         for (File orderFile : getOrderFiles()) {
 
             if (orderFile.isFile() && orderFile.getName().startsWith("Orders_") && orderFile.getName().endsWith(".txt")) {
@@ -109,27 +115,22 @@ public class OrderDaoFileImpl implements OrderDao {
         return dates;
     }
 
-    // stream
     @Override
     public List<Integer> getOrderNumbers(LocalDate date)
             throws FlooringMasteryPersistenceException {
 
         loadOrdersForDate(date);
 
+        // stream
+        // return available order numbers in ascending order
         return orders.keySet()
                 .stream()
                 .sorted()
                 .collect(Collectors.toList());
     }
 
-//    private String getOrderFileName(LocalDate date) {
-//        String orderFileDate = date.format(formatter);
-//
-//        return "Orders/Orders_" + orderFileDate + ".txt";
-//    }
-
     private String getOrderFileName(LocalDate date) {
-
+        // create the order file name using the required date format
         String orderFileDate = date.format(formatter);
 
         return new File(ordersDirectory, "Orders_" + orderFileDate + ".txt").getPath();
@@ -145,10 +146,12 @@ public class OrderDaoFileImpl implements OrderDao {
                     "Could not save order data.", e);
         }
 
+        // write the header before the order data
         out.println(header);
 
         String orderAsText;
 
+        // convert each order to text and write it to the file
         for (Order currentOrder : orders.values()) {
             orderAsText = marshallOrder(currentOrder);
             out.println(orderAsText);
@@ -159,6 +162,7 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private void loadOrders(String fileName) {
+        // clear existing data before loading another order file
         orders.clear();
         Scanner scanner;
 
@@ -171,10 +175,12 @@ public class OrderDaoFileImpl implements OrderDao {
         String currentLine;
         Order currentOrder;
 
+        // skip the header
         if (scanner.hasNextLine()) {
             scanner.nextLine();
         }
 
+        // convert each file record into an order object
         while (scanner.hasNextLine()) {
             currentLine = scanner.nextLine();
             currentOrder = unmarshallOrder(currentLine);
@@ -185,6 +191,7 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private Order unmarshallOrder(String orderAsText) {
+        // split stored order data and convert it into an order object
         String[] orderTokens = orderAsText.split(DELIMITER);
 
         Order order = new Order(
@@ -206,6 +213,7 @@ public class OrderDaoFileImpl implements OrderDao {
     }
 
     private String marshallOrder(Order order) {
+        // convert the order object into its file format
         return order.objectToString();
     }
 
@@ -213,6 +221,7 @@ public class OrderDaoFileImpl implements OrderDao {
         String fileName = getOrderFileName(date);
         File orderFile = new File(fileName);
 
+        // load the file if it exists or start with an empty order collection
         if (orderFile.exists()) {
             loadOrders(fileName);
         } else {
@@ -220,7 +229,6 @@ public class OrderDaoFileImpl implements OrderDao {
         }
     }
 
-    // stream
     private File[] getOrderFiles() {
         File directory = new File(ordersDirectory);
         File[] orderFiles = directory.listFiles();
@@ -229,6 +237,8 @@ public class OrderDaoFileImpl implements OrderDao {
             return new File[0];
         }
 
+        // stream
+        // return only valid order files from the orders directory
         return Arrays.stream(orderFiles)
                 .filter(File::isFile)
                 .filter(file -> file.getName().startsWith("Orders_"))

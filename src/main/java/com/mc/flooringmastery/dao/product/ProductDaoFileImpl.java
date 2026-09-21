@@ -20,11 +20,13 @@ public class ProductDaoFileImpl implements ProductDao {
 
     @Override
     public List<Product> getAllProducts() throws FlooringMasteryPersistenceException {
+        // load tax data from file
         loadProducts();
         return new ArrayList<>(products.values());
     }
 
     private void loadProducts() throws FlooringMasteryPersistenceException {
+        // clear existing data before loading the file
         products.clear();
         Scanner scanner;
 
@@ -37,10 +39,12 @@ public class ProductDaoFileImpl implements ProductDao {
         String currentLine;
         Product currentProduct;
 
+        // skip the header
         if (scanner.hasNextLine()) {
             scanner.nextLine();
         }
 
+        // read and store each tax record by state abbreviation
         while (scanner.hasNextLine()) {
             currentLine = scanner.nextLine();
             currentProduct = unmarshallProduct(currentLine);
@@ -51,6 +55,7 @@ public class ProductDaoFileImpl implements ProductDao {
     }
 
     private Product unmarshallProduct(String productAsText) {
+        // convert file data into a tax object
         String[] productTokens = productAsText.split(DELIMITER);
 
         Product product = new Product(
