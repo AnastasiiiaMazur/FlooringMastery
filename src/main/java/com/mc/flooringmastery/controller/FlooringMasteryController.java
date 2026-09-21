@@ -29,11 +29,7 @@ public class FlooringMasteryController {
 
         while (isRunning) {
             menuSelection = getMenuSelection();
-            try {
-                runMenuSelection(menuSelection);
-            } catch (Exception ex) {
-                System.out.println("Test");
-            }
+            runMenuSelection(menuSelection);
         }
     }
 
@@ -41,6 +37,7 @@ public class FlooringMasteryController {
         return view.displayMenu();
     }
 
+    // call methods based on user selection
     private void runMenuSelection(int menuSelection) {
         switch (menuSelection) {
             case 1: // display orders
@@ -76,13 +73,13 @@ public class FlooringMasteryController {
 
             // View displays available dates and asks for the date
             view.displayAvailableDates(dates);
-            LocalDate userDate = dateValidation();
 
-            // Service gets all orders for that date
+            LocalDate userDate = getExistingOrderDate(dates);
+
+            // Service gets all orders for that date and view displays them
             List<Order> orders = service.getAllOrders(userDate);
-
-            // View displays the orders
             view.displayAllOrdersForDate(userDate, orders);
+
         } catch (FlooringMasteryPersistenceException e) {
             view.displayErrorMessage(e.getMessage());
         }
@@ -90,37 +87,31 @@ public class FlooringMasteryController {
 
     private void addOrder() {
         try {
-            // Ask View for date
             LocalDate date = dateValidation();
-
-            // Ask View for customer name
             String name = nameValidation();
 
-            // Display available states and get state
+            // Display valid states before requesting the user's selection.
             view.displayAvailableStates(service.getAllTaxes());
             String state = stateValidation();
 
-            // Display available products and get product
+            // Display valid products before requesting the user's selection.
             view.displayAvailableProducts(service.getAllProducts());
             String productType = productValidation();
 
-            // Ask for area
             BigDecimal area = areaValidation();
 
-            // service.createOrder(...)
-            Order complete = service.createOrder(date, name, state, productType, area);
+            // Build and preview the order before saving it.
+            Order complete = service.createOrder(
+                    date, name, state, productType, area);
 
-            // View displays completed order
             view.displayCompleteOrder(complete, "Here is your complete order!");
 
-            // Ask for confirmation
             if (view.confirmation("Would you like to place this order?")) {
                 service.addOrder(date, complete);
                 view.displayOrderStatusMessage("Order was accepted successfully!");
             } else {
                 view.displayOrderStatusMessage("Order cancelled!");
             }
-
 
         } catch (FlooringMasteryDataValidationException e) {
             view.displayErrorMessage(e.getMessage());
@@ -131,14 +122,17 @@ public class FlooringMasteryController {
 
     private void editOrder() {
         try {
+            // Get available order dates from Service
             List<LocalDate> dates = service.getAvailableOrderDates();
             if (dates.isEmpty()) {
                 view.displayOrderStatusMessage("There are no orders available.");
                 return;
             }
+            // View displays available dates and asks for the date
             view.displayAvailableDates(dates);
-            LocalDate userDate = dateValidation();
+            LocalDate userDate = getExistingOrderDate(dates);
 
+            // get all available order numbers from service
             Integer orderNumber = getOrderNumber(userDate);
             if (orderNumber == null) {
                 return;
@@ -147,47 +141,49 @@ public class FlooringMasteryController {
             Order order = service.getOrder(userDate, orderNumber);
             view.displayCompleteOrder(order, "Order " + order.getOrderNumber());
 
-            // name
             String name = view.getCustomerName();
 
+            // blank input keeps the existing customer name
             if (name.trim().isEmpty()) {
                 name = order.getOrderName();
             } else {
                 service.validateCustomer(name);
             }
 
-            // state
             view.displayAvailableStates(service.getAllTaxes());
             String state = view.getState();
 
+            // blank input keeps the existing state
             if (state.trim().isEmpty()) {
                 state = order.getState();
             } else {
                 service.validateState(state);
             }
 
-            // product type
             view.displayAvailableProducts(service.getAllProducts());
             String productType = view.getProductType();
 
+            // blank input keeps the existing product type
             if (productType.trim().isEmpty()) {
                 productType = order.getProductType();
             } else {
                 service.validateProduct(productType);
             }
 
-            // area
             BigDecimal area = view.getEditedArea();
 
+            // blank input keeps the existing area
             if (area == null) {
                 area = order.getArea();
             } else {
                 service.validateOrderArea(area);
             }
 
+            // service creates updated order and displays it to the user
             Order newOrder = service.createEditedOrder(orderNumber, name, state, productType, area);
             view.displayCompleteOrder(newOrder, "Here is your updated order");
 
+            // ask for confirmation
             if (view.confirmation("Would you like to update this order?")) {
                 service.editOrder(userDate, orderNumber, name, state, productType, area);
                 view.displayOrderStatusMessage("Order was updated successfully!");
@@ -204,24 +200,28 @@ public class FlooringMasteryController {
 
     private void removeOrder() {
         try {
+            // Get available order dates from Service
             List<LocalDate> dates = service.getAvailableOrderDates();
             if (dates.isEmpty()) {
                 view.displayOrderStatusMessage("There are no orders available.");
                 return;
             }
+            // View displays available dates and asks for the date
             view.displayAvailableDates(dates);
-            LocalDate userDate = dateValidation();
+            LocalDate userDate = getExistingOrderDate(dates);
 
+            // get available order numbers from service
             Integer num = getOrderNumber(userDate);
 
             if (num == null) {
                 return;
             }
 
+            // service retrieves order and view displays it to the user
             Order order = service.getOrder(userDate, num);
-
             view.displayCompleteOrder(order, "Order " + order.getOrderNumber());
 
+            // ask for confirmation
             if (view.confirmation("Would you like to delete this order?")) {
                 service.removeOrder(userDate, order.getOrderNumber());
                 view.displayOrderStatusMessage("Order was deleted successfully!");
@@ -234,6 +234,22 @@ public class FlooringMasteryController {
         } catch (FlooringMasteryPersistenceException e) {
             view.displayErrorMessage(e.getMessage());
         }
+    }
+
+    private LocalDate getExistingOrderDate(List<LocalDate> dates) {
+        LocalDate userDate;
+
+        while (true) {
+            userDate = view.getDate();
+
+            if (dates.contains(userDate)) {
+                break;
+            }
+
+            view.displayErrorMessage("Please choose a date from the available dates.");
+        }
+
+        return userDate;
     }
 
     private void exitMessage() { view.displayExitMessage(); }
@@ -316,19 +332,22 @@ public class FlooringMasteryController {
         return area;
     }
 
+    // retrieve order number
     private Integer getOrderNumber(LocalDate date) {
+        // service gets all possible order numbers for chosen date
         List<Integer> orderNumbers = service.getAvailableOrdersNum(date);
         if (orderNumbers.isEmpty()) {
             view.displayOrderStatusMessage("There are no orders available for this date.");
             return null;
         }
 
+        // view displays order numbers and asks user for the input
         view.displayOrderNums(orderNumbers);
 
         int num;
         while (true) {
             num = view.getNum();
-
+            // only accept an order number that exists for the selected date
             if (orderNumbers.contains(num)) {
                 break;
             }
